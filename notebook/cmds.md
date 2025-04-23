@@ -76,6 +76,8 @@ pip install --quiet --upgrade langchain-text-splitters langchain-community langg
 
 <p>
 
+<h3> Without langchain</h3>
+
 1. Generate an API key
 
 2. Install dependencies
@@ -90,4 +92,45 @@ LANGSMITH_PROJECT="pr-impassioned-macrame-69"
 OPENAI_API_KEY="<your-openai-api-key>"
 
 4. Run any LLM, Chat model, or Chain. Its trace will be sent to this project.
+
+import openai
+from langsmith.wrappers import wrap_openai
+from langsmith import traceable
+
+# Auto-trace LLM calls in-context
+client = wrap_openai(openai.Client())
+
+@traceable # Auto-trace this function
+def pipeline(user_input: str):
+    result = client.chat.completions.create(
+        messages=[{"role": "user", "content": user_input}],
+        model="gpt-3.5-turbo"
+    )
+    return result.choices[0].message.content
+
+pipeline("Hello, world!")
+
+
+<hr>
+
+<h3>With LangChain</h3>
+
+1. pip install -U langchain langchain-openai
+4. Code change
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI()
+llm.invoke("Hello, world!")
 </p>
+<hr>
+
+## Install the 3 key components
+
+pip install -qU "langchain[openai]"
+pip install -U langchain langchain-openai
+pip install -qU langchain-core
+
+
+### once it has been run
+
+go to https://smith.langchain.com/ and check the trace, under the project
